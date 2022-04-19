@@ -1,0 +1,23 @@
+{
+  "name": "solidity-ethereum-course",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/Barry0501/solidity-ethereum-course.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Barry0501/solidity-ethereum-course/issues"
+  },
+  "homepage": "https://github.com/Barry0501/solidity-ethereum-course#readme",
+  "dependencies": {
+    "web3": "^1.7.3"
+  }
+}
