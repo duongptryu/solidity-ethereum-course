@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Barry0501/solidity-ethereum-course#readme",
   "dependencies": {
-    "web3": "^1.7.3"
+    "web3": "^1.7.3",
+    "web3.js-browser": "^0.2.0"
   }
 }
