@@ -9,9 +9,10 @@ module.exports = {
       port: 8545
     }
   },
+  // https://trufflesuite.com/docs/truffle/reference/configuration/
   compilers: {
     solc: {
-      version: '0.8.0',
+      version: "^0.8.0"
     }
   }
 };
