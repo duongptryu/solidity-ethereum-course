@@ -14,12 +14,13 @@ contract("MyToken test", async (accounts) => {
 
     const [ deployerAccount, anotherAccount ] = accounts;
 
-    console.log('accounts',accounts);
-    console.log('deployerAccount',deployerAccount);
-    console.log('anotherAccount',anotherAccount);
+    // Hook function
+    beforeEach(async() => {
+        this.myToken = await MyToken.new(1000000000);
+    })
     
     it("All tokens should be in first account", async () => {
-        let instance = await MyToken.deployed();
+        let instance = this.myToken;
 
         let totalSupply = await instance.totalSupply();
 
@@ -28,7 +29,7 @@ contract("MyToken test", async (accounts) => {
 
     it("is possible to send tokens between accounts ", async () => {
         const sendToken = 1;
-        let instance = await MyToken.deployed();
+        let instance = await this.myToken;
         let totalSupply = await instance.totalSupply();
     
         await expect(instance.balanceOf(deployerAccount)).to.eventually.be.a.bignumber.equal(totalSupply);
@@ -39,11 +40,11 @@ contract("MyToken test", async (accounts) => {
 
 
     it("is not possible to send more tokens than available in total", async () => {
-        let instance = await MyToken.deployed();
+        let instance = await this.myToken;
         let balanceOfDeployer = await instance.balanceOf(deployerAccount);
     
         await expect(instance.transfer(anotherAccount,new BN(balanceOfDeployer + 1))).to.eventually.be.rejected;
-        // await expect(instance.balanceOf(deployerAccount)).to.eventually.be.a.bignumber.equal(balanceOfDeployer);
-        await expect(instance.balanceOf(deployerAccount)).to.eventually.be.a.bignumber.equal(balanceOfDeployer.sub(new BN(1)));
+        await expect(instance.balanceOf(deployerAccount)).to.eventually.be.a.bignumber.equal(balanceOfDeployer);
+        // await expect(instance.balanceOf(deployerAccount)).to.eventually.be.a.bignumber.equal(balanceOfDeployer.sub(new BN(1)));
     });
 })
