@@ -1,5 +1,5 @@
 var MyToken = artifacts.require("MyToken.sol");
-
+require('dotenv').config({path: '../.env'});
 var chai = require("chai");
 const BN = web3.utils.BN;
 const chaiBN = require('chai-bn')(BN);
@@ -16,7 +16,7 @@ contract("MyToken test", async (accounts) => {
 
     // Hook function
     beforeEach(async() => {
-        this.myToken = await MyToken.new(1000000000);
+        this.myToken = await MyToken.new(process.env.INITIAL_TOKENS);
     })
     
     it("All tokens should be in first account", async () => {

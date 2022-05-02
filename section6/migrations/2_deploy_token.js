@@ -1,11 +1,13 @@
 var MyToken = artifacts.require("MyToken.sol");
 var MyTokenSale = artifacts.require("MyTokenSale.sol");
 
+require('dotenv').config({path: '../.env'});
+
 module.exports = async function(deployer) {
-  console.log(deployer);
+  // console.log(deployer);
   let addr = await web3.eth.getAccounts();
 
-  await deployer.deploy(MyToken,1000000000);
+  await deployer.deploy(MyToken,process.env.INITIAL_TOKENS);
   await deployer.deploy(MyTokenSale,1, addr[0],MyToken.address);
 
   let tokenInstance = await MyToken.deployed();
@@ -19,8 +21,8 @@ module.exports = async function(deployer) {
 
   console.log('----------------------');
 
-  await tokenInstance.transfer(MyTokenSale.address,1000000000);
-  
+  await tokenInstance.transfer(MyTokenSale.address,process.env.INITIAL_TOKENS);
+
   let balanceOfMTSAfter = await tokenInstance.balanceOf(MyTokenSale.address);
   let balanceOfDeployerAfter = await tokenInstance.balanceOf(addr[0]);
 
