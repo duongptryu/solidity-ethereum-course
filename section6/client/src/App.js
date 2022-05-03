@@ -7,7 +7,7 @@ import getWeb3 from "./getWeb3";
 import "./App.css";
 
 class App extends Component {
-  state = { loaded: false, kycAddress: "0x235....", tokenSaleAddress: null };
+  state = { loaded: false, kycAddress: "0x235....", tokenSaleAddress: null, userToken: 0 };
 
   componentDidMount = async () => {
     try {
@@ -19,8 +19,7 @@ class App extends Component {
 
       // Get the contract instance.
       this.networkId = await this.web3.eth.net.getId();
-      
-      
+
       this.tokenInstance = new this.web3.eth.Contract(
         MyToken.abi,
         MyToken.networks[this.networkId] && MyToken.networks[this.networkId].address,
@@ -38,7 +37,13 @@ class App extends Component {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ loaded:true ,tokenSaleAddress: MyTokenSale.networks[this.networkId].address });
+
+      this.listenToTokenTransfer();
+
+      this.setState(
+        { loaded: true, tokenSaleAddress: MyTokenSale.networks[this.networkId].address },
+        this.updateUserToken,
+      );
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -60,9 +65,26 @@ class App extends Component {
 
   handleKycWhitelisting = async () => {
     await this.kycContractInstance.methods
-          .setKyc(this.state.kycAddress)
-          .send({from: this.accounts[0]});
-    alert("KYC for: "+this.state.kycAddress+ "is successful");
+      .setKyc(this.state.kycAddress)
+      .send({ from: this.accounts[0] });
+    alert("KYC for: " + this.state.kycAddress + "is successful");
+  }
+
+  buyToken = async () => {
+    await this.tokenSaleInstance.methods.buyTokens(this.accounts[0]).send({
+      from: this.accounts[0],
+      value: this.web3.utils.toWei("1", "wei"),
+    })
+  }
+
+  updateUserToken = async () => {
+    let userToken = await this.tokenInstance.methods.balanceOf(this.accounts[0]).call();
+
+    this.setState({ userToken: userToken });
+  }
+
+  listenToTokenTransfer = () => {
+    this.tokenInstance.events.Transfer({to: this.accounts[0]}).on("data", this.updateUserToken);
   }
 
   render() {
@@ -75,7 +97,7 @@ class App extends Component {
         <p>Get your token for today!!!!</p>
         <h2>KYC Whitelisting</h2>
         Address to allow:{""}
-        <input 
+        <input
           type="text"
           name="kycAddress"
           value={this.state.kycAddress}
@@ -84,17 +106,17 @@ class App extends Component {
         <button type="button" onClick={this.handleKycWhitelisting}>
           Add to Whitelist
         </button>
-        {/* <h2>
+        <h2>
           Buy Tokens
         </h2>
         <p>
           If you want to buy tokens, send Wei to this address: {""}
           {this.state.tokenSaleAddress}
         </p>
-        <p>You currently have: {this.state.userTokens} MSR Tokens</p>
-        <button type="button" onClick={this.handleKycWhitelisting}>
-
-        </button> */}
+        <p>You currently have: {this.state.userToken} MSR Tokens</p>
+        <button type="button" onClick={this.buyToken}>
+          Buy Tokens
+        </button>
       </div>
     );
   }
