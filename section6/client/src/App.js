@@ -7,7 +7,7 @@ import getWeb3 from "./getWeb3";
 import "./App.css";
 
 class App extends Component {
-  state = { loaded: false };
+  state = { loaded: false, kycAddress: "0x235....", tokenSaleAddress: null };
 
   componentDidMount = async () => {
     try {
@@ -21,24 +21,24 @@ class App extends Component {
       this.networkId = await this.web3.eth.net.getId();
       
       
-      const tokenInstance = new this.web3.eth.Contract(
+      this.tokenInstance = new this.web3.eth.Contract(
         MyToken.abi,
         MyToken.networks[this.networkId] && MyToken.networks[this.networkId].address,
       );
 
-      const tokenSaleInstance = new this.web3.eth.Contract(
+      this.tokenSaleInstance = new this.web3.eth.Contract(
         MyTokenSale.abi,
         MyTokenSale.networks[this.networkId] && MyTokenSale.networks[this.networkId].address,
       );
 
-      const kycContractInstance = new this.web3.eth.Contract(
+      this.kycContractInstance = new this.web3.eth.Contract(
         KycContract.abi,
         KycContract.networks[this.networkId] && KycContract.networks[this.networkId].address,
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ loaded:true });
+      this.setState({ loaded:true ,tokenSaleAddress: MyTokenSale.networks[this.networkId].address });
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -48,23 +48,53 @@ class App extends Component {
     }
   };
 
+  handleInputChange = (event) => {
+    const target = event.target;
+    // console('target',target);
+    const value = target.value;
+    const name = target.name;
+    this.setState({
+      [name]: value,
+    })
+  }
+
+  handleKycWhitelisting = async () => {
+    await this.kycContractInstance.methods
+          .setKyc(this.state.kycAddress)
+          .send({from: this.accounts[0]});
+    alert("KYC for: "+this.state.kycAddress+ "is successful");
+  }
+
   render() {
     if (!this.state.loaded) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
     return (
       <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
+        <h1>MoonStar Token Sale</h1>
+        <p>Get your token for today!!!!</p>
+        <h2>KYC Whitelisting</h2>
+        Address to allow:{""}
+        <input 
+          type="text"
+          name="kycAddress"
+          value={this.state.kycAddress}
+          onChange={this.handleInputChange}
+        />
+        <button type="button" onClick={this.handleKycWhitelisting}>
+          Add to Whitelist
+        </button>
+        {/* <h2>
+          Buy Tokens
+        </h2>
         <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
+          If you want to buy tokens, send Wei to this address: {""}
+          {this.state.tokenSaleAddress}
         </p>
-        <p>
-          Try changing the value stored on <strong>line 42</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div>
+        <p>You currently have: {this.state.userTokens} MSR Tokens</p>
+        <button type="button" onClick={this.handleKycWhitelisting}>
+
+        </button> */}
       </div>
     );
   }
