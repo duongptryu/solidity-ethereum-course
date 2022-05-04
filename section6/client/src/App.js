@@ -78,6 +78,7 @@ class App extends Component {
   }
 
   updateUserToken = async () => {
+    console.log('this.accounts[0]',this.accounts[0]);
     let userToken = await this.tokenInstance.methods.balanceOf(this.accounts[0]).call();
 
     this.setState({ userToken: userToken });
