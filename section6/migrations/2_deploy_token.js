@@ -12,6 +12,8 @@ module.exports = async function(deployer) {
   await deployer.deploy(MyTokenSale,1, addr[0],MyToken.address,KycContract.address);
 
   let tokenInstance = await MyToken.deployed();
+  let totalSupply = await tokenInstance.totalSupply();
+  console.log('totalSupply',totalSupply);
 
-  await tokenInstance.transfer(MyTokenSale.address,process.env.INITIAL_TOKENS);
+  await tokenInstance.transfer(MyTokenSale.address,totalSupply);
 };

@@ -44,6 +44,12 @@ class App extends Component {
         { loaded: true, tokenSaleAddress: MyTokenSale.networks[this.networkId].address },
         this.updateUserToken,
       );
+
+      let totalInTokenSale = await this.tokenInstance.methods.balanceOf(this.state.tokenSaleAddress).call();
+      console.log('totalInTokenSale before',totalInTokenSale); 
+
+      totalInTokenSale = this.convertToDisplayToken(totalInTokenSale);
+      console.log('totalInTokenSale after',totalInTokenSale); 
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -73,19 +79,26 @@ class App extends Component {
   buyToken = async () => {
     await this.tokenSaleInstance.methods.buyTokens(this.accounts[0]).send({
       from: this.accounts[0],
-      value: this.web3.utils.toWei("1", "wei"),
+      value: this.web3.utils.toWei("0.5", "ether"),
     })
+
+    let totalInTokenSale = await this.tokenInstance.methods.balanceOf(this.state.tokenSaleAddress).call();
+    console.log('totalInTokenSale after buytoken',this.convertToDisplayToken(totalInTokenSale)); 
   }
 
   updateUserToken = async () => {
-    console.log('this.accounts[0]',this.accounts[0]);
     let userToken = await this.tokenInstance.methods.balanceOf(this.accounts[0]).call();
-
+    
+    userToken = this.convertToDisplayToken(userToken);
     this.setState({ userToken: userToken });
   }
 
   listenToTokenTransfer = () => {
     this.tokenInstance.events.Transfer({to: this.accounts[0]}).on("data", this.updateUserToken);
+  }
+
+  convertToDisplayToken(amount){
+    return this.web3.utils.fromWei(amount,"ether");
   }
 
   render() {
