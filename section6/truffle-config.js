@@ -1,4 +1,8 @@
 const path = require("path");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+
+require('dotenv').config({path: './.env'});
+
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -7,6 +11,10 @@ module.exports = {
   networks: {
     develop: {
       port: 8545
+    },
+    testnet: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://data-seed-prebsc-1-s1.binance.org:8545`),
+      network_id: 97,
     }
   },
   // https://trufflesuite.com/docs/truffle/reference/configuration/

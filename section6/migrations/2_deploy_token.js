@@ -13,7 +13,6 @@ module.exports = async function(deployer) {
 
   let tokenInstance = await MyToken.deployed();
   let totalSupply = await tokenInstance.totalSupply();
-  console.log('totalSupply',totalSupply);
 
   await tokenInstance.transfer(MyTokenSale.address,totalSupply);
 };
