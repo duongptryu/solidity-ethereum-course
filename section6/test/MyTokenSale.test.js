@@ -49,6 +49,6 @@ contract("MyTokenSale test", async (accounts) => {
 
         await expect(tokenSaleInstance.sendTransaction({from: anotherAccount,value: web3.utils.toWei("1","wei")})).to.be.fulfilled;
 
-        await expect(balanceBefore + 1).to.be.bignumber.equal(await instance.balanceOf.call(anotherAccount));
+        await expect(balanceBefore.add(new BN(1))).to.be.a.bignumber.equal(await instance.balanceOf.call(anotherAccount));
     });
 })
